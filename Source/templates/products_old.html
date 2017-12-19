@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>EBidding</title>
+
+<meta name="description" content="Bid List" />
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+    <script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.rtl.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.default.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.dataviz.default.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+    <script src="http://cdn.kendostatic.com/2013.2.716/js/kendo.all.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            // Use a "/test" namespace.
+            // An application can open a connection on multiple namespaces, and
+            // Socket.IO will multiplex all those connections on a single
+            // physical channel. If you don't care about multiple channels, you
+            // can set the namespace to an empty string.
+            {% if session_user_name %}
+             
+               namespace = '/test';
+
+               // Connect to the Socket.IO server.
+               // The connection URL has the following format:
+               //     http[s]://<domain>:<port>[/<namespace>]
+               var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+              // Event handler for new connections.
+              // The callback function is invoked when a connection with the
+              // server is established.
+              socket.on('connect', function() {
+                 socket.emit('my_event', {data: 'I\'m connected!'});
+              });
+
+
+
+              // Event handler for server sent data.
+              // The callback function is invoked whenever the server emits data
+              // to the client. The data is then displayed in the "Received"
+              // section of the page.
+              socket.on('my_response', function(msg) {
+                 $('#log').append('<br>' + $('<div/>').text('Received ' + ': ' + msg.data + msg.cnt + msg.product + msg.wnr+ msg.winner).html());
+              });
+            {% endif %}    
+
+            // Handlers for the different forms in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#emit').submit(function(event) {
+                socket.emit('my_event', {data: $('#emit_data').val()});
+                return false;
+            });
+            $('form#broadcast').submit(function(event) {
+                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                return false;
+            });
+            $('form#join').submit(function(event) {
+                socket.emit('join', {room: $('#join_room').val()});
+                return false;
+            });
+            $('form#leave').submit(function(event) {
+                socket.emit('leave', {room: $('#leave_room').val()});
+                return false;
+            });
+            $('form#send_room').submit(function(event) {
+                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
+                return false;
+            });
+            $('form#close').submit(function(event) {
+                socket.emit('close_room', {room: $('#close_room').val()});
+                return false;
+            });
+            $('form#disconnect').submit(function(event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+        });
+    </script>
+
+
+
+  </head>
+
+
+  <body>
+
+     <div class="container">
+      <div class="header">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="/">Home</a></li>
+            <li role="presentation"><a href="/logout">Logout</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">EBidding</h3>
+      </div>
+
+
+    {% if session_user_name %}
+                <p align="right">Hello <b>{{ session_user_name }}</b></p>
+    {% endif %}
+
+        <div class="container" style="min-height:100% width:80%">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
+                        {{message}}
+                  </div>
+                {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block body %}{% endblock %}
+        </div>
+
+
+      <div class="container">
+        <h1 align="center">Products</h1>
+        <p class="lead"></p>
+      </div>
+
+    <div style="display:block;float:right;">
+    <button type="button" data-toggle="modal" data-target="#addProductModal" class="btn btn-primary">Add Product</button>
+    <br/>
+    </div>
+
+    <div id="ProductView">
+      <div id="addProductModal" class="modal fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Add Product</h3>
+        </div>
+        <div class="modal-body">
+          <div>
+      <form action = "" method = post>
+        <dl>
+            <dt>Product Name:</dt>
+            <dd>
+               <input type = text name = inputPname
+                  value = "{{request.form.username }}">
+            </dd>
+            <dt>Product Type:</dt>
+            <dd>
+               <input type = text name = inputPtype
+                  value = "{{request.form.username }}">
+            </dd>
+            <dt>Starting Bid:</dt>
+            <dd>
+               <input type = text name = inputSbid
+                  value = "{{request.form.username }}">
+            </dd>
+         </dl>
+        <p><input type = submit  value = Add></p>
+    </form>
+            </div>
+        </div>
+ <!--
+        <div class="modal-footer">
+          <button data-bind="click: addProduct">Add Product</button>
+        </div> -->
+      </div>
+
+      <table class="table table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>Product ID</th>
+            <th>Product name</th>
+            <th>Type</th>
+            <th>Date Added</th>
+        <!-- <th>Description</th> -->
+            <th>Starting bid</th>
+            <th>Status</th>
+        <!--    <th>Total Bids</th> -->
+        </tr>
+        </thead>
+    <tbody>
+        {% for i in obj %}
+        <tr data-toggle="modal" data-id="1" data-target="#orderModal">
+            <td>{{ i.get_id() }}</td>
+            <td>{{ i.get_title() }}</td>
+            <td>{{ i.get_producttype() }}</td>
+            <td>{{i.get_date_added() }}</td>
+            <td>{{ i.get_starting_bid()}}</td>
+            <td><strong>{{i.get_bid_status() }}</strong></td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+        <tbody data-template="bid-row-template" ></tbody>
+<!--
+        <tfoot data-template="bid-footer-template" data-bind="source: this"></tfoot>
+        -->
+      </table>
+
+      <div id="addBidModal" class="modal fade">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Add Bid</h3>
+        </div>
+        <div class="modal-body">
+          <div>
+      <form action = "/bids" method = post>
+        <dl>
+            <dt>Product id:</dt>
+            <dd>
+               <input type = text name = inputBptype
+                  value = "{{request.form.username }}">
+            </dd>
+            <dt>Bid Price:</dt>
+            <dd>
+               <input type = text name = inputBprice
+                  value = "{{request.form.username }}">
+            </dd>
+         </dl>
+        <p><input type = submit  value = Add></p>
+    </form>
+            </div>
+        </div>
+ <!--
+        <div class="modal-footer">
+          <button data-bind="click: addProduct">Add Product</button>
+        </div> -->
+      </div>
+
+    </div>
+    <div style="display:block;float:center;color:green">
+    <button type="button"  data-toggle="modal" data-target="#addBidModal" class="btn btn-lg btn-success">Click Here To Bid</button>
+    <br/>
+    </div>
+
+ </div>
+
+
+
+
+ <!--
+        <h4>Product Availbale to bid</h4>
+	        {% for i in obj %}
+            <div class="iner">
+
+                <label> Title: {{ i.get_title() }} </label><br>
+                <label> Type: {{ i.get_producttype() }} </label><br>
+                <label> Product id: {{ i.get_id() }} </label><br>
+                <label> Owner: {{ i.get_owner() }}</label><br>
+                <label> DateAdded: {{i.get_date_added() }} </label><br>
+            </div>
+        {% endfor %}
+        {% for i in obj %}
+            <h4>Product bidding details</h4>
+            <div class="inner2">
+                <label> Title: {{i.get_title()}} </label><br>
+                {% if session_user_name %}
+                        <label> StartingBid: {{ i.get_starting_bid()}} </label><br>
+                {% endif %}
+
+                <label> Product Type: {{ i.get_producttype() }}</label><br>
+                <p> Expires in <strong>{{ i.until_expire_in_hrs() }}</strong> hours or <strong>{{i.until_expire_in_mins() }}</strong> minutes </p>
+            </div>
+        {% endfor %}
+      </div>
+
+
+
+      <div class="jumbotron">
+        <h1>Bucket List App</h1>
+        <form class="form-signin">
+        <label for="inputName" class="sr-only">Name</label>
+        <input type="name" name="inputName" id="inputName" class="form-control" placeholder="Name" required autofocus>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+
+        <button id="btnSignUp" class="btn btn-lg btn-primary btn-block" type="button">Sign up</button>
+      </form>
+      </div>
+//-->
+
+
+      <footer class="footer">
+        <p>&copy; GaneshSanthar</p>
+      </footer>
+
+    </div>
+        <div id="log">
+        </div>
+
+  </body>
+</html>
+

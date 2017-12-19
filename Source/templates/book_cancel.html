@@ -1,0 +1,12 @@
+	<p>Hi {{ session_first_name }}, Thanks for renting the item {{ obj_ptitle }}</p>
+	<p>Your Booking details are :</p>
+	<p>Rent item Title : {{ obj_ptitle }} </p>
+	<p>Rent Price : {{ obj_pprice}} $ per day </p>
+	<p>Rent Start date : {{ bookfrom }} </p>
+	<p>Rent End date : {{ bookto }} </p>
+	<p>If you wish to cancel the rent, you need to cancel before 24 hours. Please follow this link to cancel the booking:</p>
+	<p><a href="{{ cancel_url }}">{{ cancel_url }}</a></p>
+	<br>
+	<p>Cheers,</p>
+	<p>Rent Easy</p>
+

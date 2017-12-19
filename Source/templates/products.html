@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://getbootstrap.com/docs/3.3/favicon.ico">
+
+
+    <title>RentEasy</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
+    <link href="../static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../static/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body>
+   <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">RentEasy</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+        	<form class="navbar-form navbar-left" action="/search" method="POST">
+            	<div class="form-group">
+              		<input placeholder="Search anything" class="form-control" type="text" name ="inputSearch">
+            	</div>
+            	<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+          	</form>
+
+	{% if session_user_name %}
+	<ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> 
+                        <strong>{{ session_user_name }}</strong>
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <div class="navbar-login">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <p class="text-center">
+                                            <span class="glyphicon glyphicon-user icon-size"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <p class="text-left"><strong>{{ session_first_name }} {{ session_last_name }}</strong></p>
+                                        <p class="text-left small">{{ session_email }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="navbar-login navbar-login-session">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p>
+                                            <a href="/logout" class="btn btn-danger btn-block">Logout</a>
+					    <a href="#spaceModal" data-toggle="modal"  class="btn btn-danger btn-block">add item</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+        </ul> 
+	{% else %}
+        <form class="navbar-form navbar-right" action="/login" method="POST">
+            <div class="form-group">
+              <input placeholder="Username" class="form-control" type="text" name ="inputName">
+            </div>
+            <div class="form-group">
+              <input placeholder="Password" class="form-control" type="password" name ="inputPassword">
+            </div>
+            <input type=hidden class=current_url value="" name=current_url>
+            <button type="submit" class="btn btn-success">Sign in</button>
+       <!--	<a class="btn btn-success" href="#" data-toggle="modal" data-target="#LoginModal">Sign_up</a> -->
+	<button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">Sign up</button>
+          </form>
+	{% endif %}
+<!-- <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Sign Up</button> -->
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+	{% if obj %}
+      <h3>New item addition Confirmation:</h3>
+        {% for i in obj %}
+                <div class="row">
+                        <div class="col-sm-6" >
+                                <a href="#" title="Lorem ipsum" class="thumbnail"><img id="foo" src="../static/img/img_{{ i.get_id() }}.jpg" alt="Lorem ipsum" /></a>
+                        </div>
+                        <div class="col-sm-6" id="des">
+                                <h4><a href="#" title="">{{ i.get_title() }}</a></h4>
+                                <p><span class="glyphicon glyphicon-tag"></span>  {{   i.get_producttype()}}</p>
+                                <p><span class="glyphicon glyphicon-usd fa-fw"></span> {{ i.get_sale_price()}} per day</p>
+                        </div>
+                </div>
+        {% endfor %}
+ 	{% else %}
+ 	<h3>New item addition failed</h3>
+        <p>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        {{message}}
+        </div>
+                {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block body %}{% endblock %}
+        </p>
+
+          {% endif %}
+
+      </div>
+    </div>
+
+
+    <div class="container">
+      <h1>Recent Listings</h1>
+      <!-- Example row of columns -->
+      <div class="row">
+       {% for i in obj_all %}
+        <div class="col-md-4">
+          <img class="img-circle" src="../static/img/img_{{ i.get_id() }}.jpg" alt="Generic placeholder image" width="140" height="140">
+          <h2>{{ i.get_title() }}</h2>
+          <p>{{ i.get_product_desc() }}</p>
+          <p>{{ i.get_sale_price()}}$ per day.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+        </div>
+      {% endfor %}
+
+<!-- line modal -->
+<div class="modal fade" id="spaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                        <h3 class="modal-title" id="lineModalLabel">Add a New Item for rent</h3>
+                </div>
+                <div class="modal-body">
+
+            <!-- content goes here -->
+              <form action="/products" class="form-horizontal" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="inputPname">Product Title</label>
+                <input type="text" class="form-control" name="inputPname" id="inputPname" placeholder="Enter Product Title" required >
+              </div>
+              <div class="form-group">
+                <label for="inputPtype">Product Type</label>
+                <input type="text" class="form-control" name="inputPtype" id="inputPtype" placeholder="Enter Product Type" required >
+              </div>
+              <div class="form-group">
+                <label for="inputPdesc">Product description</label>
+                <input type="text" class="form-control" name="inputPdesc" id="inputPdesc" placeholder="Enter product details" required >
+              </div>
+              <div class="form-group">
+                <label for="inputSprice">Rent price</label>
+                <input type="text" class="form-control" name="inputSprice" id="inputSprice" placeholder="Rent Price per day" required >
+              </div>
+              <div class="form-group">
+                <label for="inputPpic">Product Photo</label>
+                <input type="file" name="inputPpic" id="inputPpic">
+               <p class="help-block">Example block-level help text here.</p>
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+
+                </div>
+                <div class="modal-footer">
+                        <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                                <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
+                                </div>
+                        </div>
+                </div>
+        </div>
+  </div>
+</div>
+
+      </div>
+
+      <hr>
+<!-- Modal -->
+<div class="modal fade bs-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <br>
+        <div class="bs-example bs-example-tabs">
+            <ul id="myTab" class="nav nav-tabs">
+              <li class="active"><a href="#signup" data-toggle="tab">Register</a></li>
+              <li class=""><a href="#signin" data-toggle="tab">Sign In</a></li>
+            </ul>
+        </div>
+      <div class="modal-body">
+        <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade " id="signin">
+            <form class="form-horizontal" action = "/login" method = "POST">
+            <fieldset>
+            <!-- Sign In Form -->
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="userid">Username:</label>
+              <div class="controls">
+                <input required="" id="userid" name="inputName" type="text" class="form-control" placeholder="JoeSixpack" class="input-medium" required="">
+              </div>
+            </div>
+
+            <!-- Password input-->
+            <div class="control-group">
+              <label class="control-label" for="passwordinput">Password:</label>
+              <div class="controls">
+                <input required="" id="passwordinput" name="inputPassword" class="form-control" type="password" placeholder="********" class="input-medium">
+              </div>
+            </div>
+
+            <!-- Button -->
+            <div class="control-group">
+              <label class="control-label" for="signin"></label>
+              <div class="controls">
+                <button id="signin" name="signin" class="btn btn-success">Sign In</button>
+              </div>
+            </div>
+            </fieldset>
+            </form>
+        </div>
+        <div class="tab-pane fade active in" id="signup">
+            <form class="form-horizontal" action = "/Register" method = "POST">
+            <fieldset>
+            <!-- Sign Up Form -->
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="Email">Email:</label>
+              <div class="controls">
+                <input id="Email" name="inputEmail" class="form-control" type="text" placeholder="JoeSixpack@sixpacksrus.com" class="input-large" required="">
+              </div>
+            </div>
+            
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="userid">Username:</label>
+              <div class="controls">
+                <input id="userid" name="inputUName" class="form-control" type="text" placeholder="JoeSixpack" class="input-large" required="">
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="userid">Firstname:</label>
+              <div class="controls">
+                <input id="userid" name="inputFName" class="form-control" type="text" placeholder="JoeSixpack" class="input-large" required="">
+              </div>
+            </div>
+            
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="userid">Lastname:</label>
+              <div class="controls">
+                <input id="userid" name="inputLName" class="form-control" type="text" placeholder="JoeSixpack" class="input-large" required="">
+              </div>
+            </div>
+            
+            
+            <!-- Password input-->
+            <div class="control-group">
+              <label class="control-label" for="password">Password:</label>
+              <div class="controls">
+                <input id="password" name="inputPassword" class="form-control" type="password" placeholder="********" class="input-large" required="">
+                <em>1-8 Characters</em>
+              </div>
+            </div>
+            
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="reenterpassword">Re-Enter Password:</label>
+              <div class="controls">
+                <input id="reenterpassword" class="form-control" name="reenterpassword" type="password" placeholder="********" class="input-large" required="">
+              </div>
+            </div>
+            
+	    <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="avenue">Avenue:</label>
+              <div class="controls">
+                <input id="avenue" class="form-control" name="avenue" type="text" placeholder="eg.avenue ndg" class="input-large" required="">
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="zipcode">Zip-Code:</label>
+              <div class="controls">
+                <input id="zipcode" class="form-control" name="zipcode" type="text" placeholder="eg.H4B1K8" class="input-large" required="">
+              </div>
+            </div>
+            
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="city">City:</label>
+              <div class="controls">
+                <input id="city" class="form-control" name="city" type="text" placeholder="eg.Montreal" class="input-large" required="">
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="control-group">
+              <label class="control-label" for="country">Country:</label>
+              <div class="controls">
+                <input id="country" class="form-control" name="country" type="text" placeholder="eg.Canada" class="input-large" required="">
+              </div>
+            </div>
+            
+            <!-- Button -->
+            <div class="control-group">
+              <label class="control-label" for="confirmsignup"></label>
+              <div class="controls">
+                <button id="confirmsignup" name="confirmsignup" class="btn btn-success">Sign Up</button>
+              </div>
+            </div>
+            </fieldset>
+            </form>
+      </div>
+    </div>
+      </div>
+      <div class="modal-footer">
+      <center>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </center>
+      </div>
+    </div>
+  </div>
+
+      <footer>
+        <p>© GaneshSanthar.</p>
+      </footer>
+    </div> <!-- /container -->
+
+<script>
+$(document).ready(function() {
+  $("#newModalForm").validate({
+    rules: {
+      pName: {
+        required: true,
+        minlength: 8
+      },
+      action: "required"
+    },
+    messages: {
+      pName: {
+        required: "Please enter some data",
+        minlength: "Your data must be at least 8 characters"
+      },
+      action: "Please provide some data"
+    }
+  });
+});
+</script>
+<script>
+function get_current_url() {
+    var url=window.location.href;
+    return url
+}
+
+$(window).on('load',function(){
+    var current_url=document.getElementsByClassName('current_url')[0];
+    current_url.value=get_current_url();
+
+})
+</script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../static/js/jquery.js"></script>
+    <script>window.jQuery || document.write('<script src="../static/js/jquery.min.js"><\/script>')</script>
+    <script src="../static/js/bootstrap.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+</body></html>

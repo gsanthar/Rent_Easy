@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>EBidding</title>
+
+
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <link href="../static/css/signup.css" rel="stylesheet">
+    <script src="../static/js/jquery-1.11.2.js"></script>
+    <script src="../static/js/signUp.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" ><a href="/">Home</a></li>
+            <li role="presentation"><a href="/login">Login</a></li>
+            <li role="presentation" class="active"><a href="#">Register</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">EBidding</h3>
+      </div>
+
+        <div class="container" style="min-height:100% width:80%">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
+                        {{message}}
+                  </div>
+                {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block body %}{% endblock %}
+        </div>
+
+      <form action = "" method = post>
+        <h1>Register Here</h1>
+
+         <dl>
+            <dt>Firstname:</dt>
+
+            <dd>
+               <input type = text name = inputFName
+                  value = "{{request.form.username }}">
+            </dd>
+
+            <dt>Lastname:</dt>
+
+            <dd>
+               <input type = text name = inputLName
+                  value = "{{request.form.username }}">
+            </dd>
+
+            <dt>Username:</dt>
+
+            <dd>
+               <input type = text name = inputUName
+                  value = "{{request.form.username }}">
+            </dd>
+
+            <dt>Email:</dt>
+
+            <dd>
+               <input type = text name = inputEmail
+                  value = "{{request.form.username }}">
+            </dd>
+
+            <dt>Password:</dt>
+            <dd><input type = password name = inputPassword></dd>
+         </dl>
+         <p><input type = submit value = SignUp></p>
+      </form>
+<!--
+      <div class="jumbotron">
+        <h1>Bucket List App</h1>
+        <form class="form-signin">
+        <label for="inputName" class="sr-only">Name</label>
+        <input type="name" name="inputName" id="inputName" class="form-control" placeholder="Name" required autofocus>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+
+        <button id="btnSignUp" class="btn btn-lg btn-primary btn-block" type="button">Sign up</button>
+      </form>
+      </div>
+//-->
+
+
+      <footer class="footer">
+        <p>&copy; GaneshSanthar</p>
+      </footer>
+
+    </div>
+  </body>
+</html>
+
