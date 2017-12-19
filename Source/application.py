@@ -483,9 +483,9 @@ def cancel_email(token):
            email_token = usr_q.email + "," + str(b.id)
            token = generate_confirmation_token(email_token)
            cancel_url = url_for('cancel_email', token=token, _external=True)
-           html = render_template('book_cancel.html', cancel_url=cancel_url,obj_ptitle=p_sel.title,obj_pprice=p_sel.sale_price,session_user_name=usr_q.username,session_first_name=usr_q.firstname,session_last_name=usr_q.lastname,session_email=usr_q.email,bookfrom=l_fr,bookto=l_to)
+           html = render_template('book_cancel.html', cancel_url=cancel_url,obj_ptitle=p_sel.title,obj_pprice=p_sel.sale_price,session_user_name=usr_q.username,session_first_name=usr_q.first_name,session_last_name=usr_q.last_name,session_email=usr_q.email,bookfrom=q_m_fr,bookto=q_m_to)
            subject = "Your Booking Info"
-           send_email(user.email, subject, html)
+           send_email(usr_q.email, subject, html)
            msg = "You cancelled your Booking with id:",str(bid),"with Title:",str(bid_title)
            flash(msg)
            return redirect(url_for('main'))
